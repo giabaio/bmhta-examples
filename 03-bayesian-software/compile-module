@@ -1,0 +1,7 @@
+## To compile the C++ files, use this
+g++ -std=c++11 -fPIC -shared -o pcprob.so PCProb.cpp PCProbModule.cpp \
+    -I/usr/include/JAGS -L/usr/lib/x86_64-linux-gnu/ -ljags
+
+# Now may need to copy the module onto the JAGS modules folder
+# sudo cp pcprob.so /usr/lib/x86_64-linux-gnu/JAGS/modules-4/.    
+

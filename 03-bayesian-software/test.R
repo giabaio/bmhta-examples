@@ -7,7 +7,7 @@ load.module("pcprob",path=".")
 
 # Sets data
 y=4
-n=6
+n=10
 # lambda>0 controls how strictly the PC concentrates around the base-value theta0
 #   higher lambda implies larger mass around theta0, while smaller lambda 
 #   indicates that the mass is spread out more widely
@@ -46,7 +46,7 @@ model_pc_bern=function(){
 m2=jags(
   data=list(y=y,n=n,lambda=lambda,theta0=theta0,w=0,C=10000),
   parameters.to.save=c("theta"),model.file=model_pc_bern,n.chains=2,
-  n.thin=4,n.iter=100000,DIC=FALSE
+  n.thin=4,n.iter=100000,DIC=FALSE,inits=list(list(theta=0.1), list(theta=0.9))
 )
 
 # Shows the results

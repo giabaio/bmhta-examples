@@ -1,6 +1,14 @@
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| eval: true
+#' This script contains all the code used in Chapter 1. Graphs may look 
+#' different than the published version, especially if they contain some 
+#' mathematical notation, processed using LaTeX. If the graph is rendered 
+#' using the `tikzDevice` package, then the mathematical symbols (e.g. $x$) are
+#' processed correctly through LaTeX and display as in the published version.
+#' In pure R, they are considered as verbatim text string.
+
+## ----Load relevant packages----------------------------------------------------------------------------------------------------------------------------------------
+library(tidyverse)
+
+## ----Set up significance test--------------------------------------------------------------------------------------------------------------------------------------
 set.seed(120)
 n0=80; n1=78; n=n0+n1
 mu0=25; mu1=32
@@ -16,31 +24,15 @@ s2_D=(s2_0/n0)+(s2_1/n1)
 delta=0
 t=(d-delta)/sqrt(s2_D)
 
-
-## ----pvalue--------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
 pt(q=t,df=n-1,lower.tail=FALSE)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| label: fig-ttestFish2
-#| fig-cap: 'The sampling distribution for the statistic $T$ under the null hypothesis, $p(T \mid H_0)$. The shaded area indicates the $p-$value, $\Pr(T>t=2.45\mid H_0)=0.0077$'
-#| dev: "tikz"
-#| echo: false
 ggplot(NULL, aes(c(-4,4))) +
   geom_area(stat="function",fun=dt,args=list(df=n-1),fill="white",xlim=c(-4,t),col="black",alpha=0.15) +
   geom_area(stat="function",fun=dt,args=list(df=n-1),fill="grey",xlim=c(t,4),col="black") + 
   theme_bw() + xlab("$T$") + ylab("Sampling distribution for $T$") + 
   annotate("text",x=t,y=-.005,label=paste("$t=",format(t,digits=3,nsmall=2),"$"))
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| dev: "tikz"
-#| label: fig-intervals-experts
-#| fig-cap: "Even with very different starting points, the two experts become increasingly aligned in their (posterior) judgement by effect of increasingly large and definitive evidence from the data"
-#| fig-height: 4.5
-#| fig-width: 6
-
+## ----Experts-------------------------------------------------------------------------------------------------------------------------------------------------------
 set.seed(1234)
 n=10
 y=sum(rbinom(n,1,0.93))
@@ -118,12 +110,8 @@ ints |>
     axis.line.y=element_blank(),axis.ticks.y=element_blank()
   ) + scale_color_manual(values = c("#E69F00","#0072B2"))
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-covid-testing-2
-#| fig-pos: "h"
-#| fig-cap: "The relationship between the 'posterior' probability of disease given the negative result and the 'prior' probability of the disease given current knowledge, considering a range of possible values in $[0;1]$"
-#| dev: "tikz"
+
+## ----Covid testing-------------------------------------------------------------------------------------------------------------------------------------------------
 theta=seq(0,1,.01)
 data=tibble(prior=theta, post=theta*0.04/(theta*0.04 + (1-theta)*.95))
 data %>% ggplot() + geom_line(aes(prior,post)) + 
@@ -136,7 +124,7 @@ data %>% ggplot() + geom_line(aes(prior,post)) +
   geom_segment(aes(x=.8,y=-Inf,xend=.8,yend=data %>% dplyr::filter(prior==0.8) %>% pull(post)), linetype="dashed") 
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Monte Carlo approximation-------------------------------------------------------------------------------------------------------------------------------------
 # Simulates a sample of S values from y ~ Normal(0,1)
 S=100000
 y=rnorm(S,0,1)
@@ -145,12 +133,6 @@ y=rnorm(S,0,1)
 # y_{0.975} such that Pr(Y<=y_{0.025})=0.025 and Pr(Y<=y_{0.975})=0.975
 quantile(y,c(0.025,0.975))
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| dev: "tikz"
-#| label: fig-monte-carlo-approx
-#| fig-cap: "Monte Carlo approximation of the 2.5% and 97.5% percentiles of a Normal(0,1) distribution. Increasing number of MC samples improves the accuracy and, effectively, reduces the approximation error to virtually nothing. The dashed horizontal lines indicate the analytic values for the 2.5% and the 97.5% quantiles of the standard Normal distribution"
 S=c(10,15,20,30,50,75,100,200,300,500,750,1000,2000,5000,7500,10000,50000,100000,500000,1000000)
 y=lapply(S,function(S) rnorm(S,0,1))
 low=lapply(1:length(S),function(i) quantile(y[[i]],0.025)) |> unlist()
@@ -172,12 +154,8 @@ tibble(S=S,quantile=low,type="0.025 quantile") |>
     breaks=c(10,100,1000,10000,100000,1000000)
   ) + scale_color_manual(values = c("#E69F00","#0072B2"))
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-prior-mu
-#| dev: "tikz"
-#| out-width: "100%"
-#| fig-cap: "A prior for $\\mu\\sim\\mbox{log-Normal}(5.2,0.2)$"
+
+## ----Forward sampling----------------------------------------------------------------------------------------------------------------------------------------------
 set.seed(3020)
 # Simulate values from the prior on the *natural* parameters
 mu=rlnorm(10000,5.2,.2)
@@ -191,24 +169,10 @@ tibble(mu=seq(0,600)) |> mutate(p1=dlnorm(seq(0,600),5.2,.2)) |>
   ggplot(aes(mu,p1)) + 
   geom_line() + xlab("$\\mu$") + ylab("")
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-prior-sigma
-#| out-width: "100%"
-#| dev: "tikz"
-#| fig-cap: "A prior for $\\sigma\\sim\\mbox{Exponential}(0.35)$"
 tibble(sigma=seq(0,15,.1)) |> mutate(p2=dexp(seq(0,15,.1),.35)) |> 
   ggplot(aes(sigma,p2)) + 
   geom_line() + xlab("$\\sigma$") + ylab("")
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| out-width: "100%"
-#| label: fig-prior-eta
-#| dev: "tikz"
-#| fig-cap: "The implied prior for $\\nu=\\mu\\gamma$"
 mu=rlnorm(10000,5.2,.2)
 sigma=rexp(10000,.35)
 gamma=sqrt(mu/sigma^2)
@@ -216,19 +180,11 @@ nu=mu*gamma
 tibble(nu) |> ggplot(aes(nu)) + geom_density() + 
   xlab("$\\nu$") + ylab("") + xlim(0,30000)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| out-width: "100%"
-#| label: fig-prior-lambda
-#| dev: "tikz"
-#| fig-cap: "The implied prior for $\\displaystyle\\gamma=\\sqrt{\\frac{\\mu}{\\sigma^2}}$"
 tibble(gamma) |> ggplot(aes(gamma)) + geom_density() + 
   xlab("$\\gamma$") + ylab("")+ xlim(c(0,200))
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
+## ----Drug----------------------------------------------------------------------------------------------------------------------------------------------------------
 # Defines the number of simulations
 nsim = 10000  
 
@@ -237,36 +193,17 @@ alpha = 9.2
 beta = 13.8
 theta = rbeta(n=nsim, shape1=alpha, shape2=beta)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
 # Produces summary statistics for the prior
 bmhe::stats(theta)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| dev: "tikz"
-#| label: fig-hist-drug-prior
-#| fig-cap: "A histogram describing the Monte Carlo simulations from a Beta(9.2, 13.8) distribution. As is possible to see, the distribution is roughly speaking centered around 0.4 and most values are included in the interval [0.2; 0.6], as required"
-#| fig-pos: "h"
+# Histogram
 tibble(theta) |> ggplot(aes(theta)) + geom_histogram(col="black",fill="grey") +  
   xlab("$\\theta$") 
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
 sum(theta>0.5)/length(theta)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-info-distr
-#| fig-cap: "The prior *information* indicates that most of the mass for the parameter $\\theta$ should be contained between 0.2 and 0.6, which can be encoded into two different prior *distributions*: the curve shows a $\\mbox{Beta}(9,2, 13.8)$, while the histogram shows a $\\mbox{Normal}(-0.4, 0.413)$ on the logit scale. For all intents and purposes, the two are effectively identical"
-#| dev: "tikz"
-#| fig-pos: "h"
-#| fig-height: 3.5
-#| fig-width: 5.5
+## ----Priors---------------------------------------------------------------------------------------------------------------------------------------------------------
 dat1=tibble(x=seq(0,1,.001),p1=dbeta(seq(0,1,.001),9.2,13.8))
 dat2=tibble(x=rlnorm(10000,bmhe::logit(0.4),0.413))
 tibble(p2=bmhe::ilogit(rnorm(10000,bmhe::logit(.4),0.413))) |>
@@ -287,35 +224,11 @@ tibble(p2=bmhe::ilogit(rnorm(10000,bmhe::logit(.4),0.413))) |>
     legend.background=element_rect(fill='transparent')
   )
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-# Need to re-run this chunk as it can't be ported from a different file...
-# May need to create a .qmd or .R file that has these instructions to run 
-# once every new chapter if needed throughout...
-# Defines the number of simulations
-nsim = 10000  
-
-# Then defines the prior distribution for theta
-alpha = 9.2
-beta = 13.8
-theta = rbeta(n=nsim, shape1=alpha, shape2=beta)
-
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Defines the `dlogitnorm` function
 dlogitnorm=function(x,mu,sigma) {
   dnorm(log(x/(1-x)),mu,sigma)*abs(1/(x*(1-x)))
 }
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-beta-logitnormal
-#| fig-cap: "Comparison on the Beta and the logit-Normal distributions for $\\theta$"
-#| dev: "tikz"
-#| fig-pos: "H"
-#| fig-height: 3.5
-#| fig-width: 5.5
 # Define a dataset with x = a range of values in [0;1] and y computed as 
 # their density for the logit-Normal(-0.405,0.4137) distribution
 tibble(
@@ -341,38 +254,25 @@ tibble(
   scale_linetype_manual(values = c("solid","dashed"), name = "")
 #  scale_color_manual(values = c("#E69F00","#0072B2"))
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# Check values
 dlogitnorm(0.4,-0.405,0.413)
 dbeta(0.4,9.2,13.8)
 
 
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
+## ----Predictive distribution----------------------------------------------------------------------------------------------------------------------------------------
 #| echo: true
 # Simulates from the (prior) predictive distribution of 'y'
 y=rbinom(n=nsim,size=20,prob=theta)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
 P.crit=(y>=15)
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: false
-#| label: fig-predictive-drug
-#| fig-cap: 'The (prior) predictive distribution $p(y)$. The bars in lighter colour indicate the "tail area probability" that the observed results would exceed the threshold set at at least 15 successes out of 20 individuals'
-#| dev: "tikz"
 tibble(y=y) |> mutate(P.crit=y>=15) |> ggplot(aes(y,fill=P.crit)) + 
   geom_bar(stat="count",col="black") + xlab("$y$") + 
   theme(
     legend.position="none"
   ) + scale_fill_manual(values = c("#1F77B4","#FF7F0E"))
 
-
-## ------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#| echo: true
-# Binds the vectors 'P.crit', 'y' and 'theta' into columns of a matrix
+# Combines the simulations
 sims = cbind(P.crit,y,theta)
 # Runs bmhe::stats to summarise the simulations
 bmhe::stats(sims)

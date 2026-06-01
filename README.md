@@ -106,7 +106,7 @@ Many figures in the book use `dev: "tikz"` to render axis labels and annotations
 
 **09 — Markov models.** Dirichlet simplex visualisations; four-state HIV Markov model (Multinomial-Dirichlet, relative risk evidence synthesis, Weibull treatment waning, matrix-algebra simulation, discounted costs); three-state cancer model linked to survival analysis via `survHE`; Markov trace and LYG.
 
-**10 — Missing data.** MCAR, MAR and MNAR mechanisms; simulation study of bias; multiple imputation illustrated on synthetic data; JAGS templates for MAR and MNAR models; the MenSS trial with Normal-Normal, Beta-Gamma (rescaled) and Beta-Gamma hurdle models under MAR.
+**10 — Missing data.** MCAR, MAR and MNAR mechanisms; simulation study of bias; multiple imputation illustrated on synthetic data; the MenSS trial with Normal-Normal, Beta-Gamma (rescaled) and Beta-Gamma hurdle models under MAR.
 
 **11 — Population adjustment.** Effect modifiers and collapsibility (RD, RR, OR); population-average conditional vs marginal estimands; Monte Carlo vs Quasi-Monte Carlo integration (Halton sequence); overview of MAIC, STC, ML-NMR (`multinma`), g-computation and MIM (`outstandR`).
 

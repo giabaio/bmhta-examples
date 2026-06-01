@@ -39,14 +39,6 @@ Four scenarios are run with S=1000 repetitions each, all using the same MoA (y =
 
 Illustrates the mechanics of MI on simulated data with a single covariate. A "population" of N=1000 is constructed and a sample is drawn with a 20% MCAR dropout. The predictive model `lm(y ~ x4)` is fitted on the observed data; R=5 imputed values per missing observation are drawn from Normal(mu_hat, sigma_hat) using `sigma.hat()` from the `arm` package. Three plots are produced: (a) observed data with `?` markers for missing individuals; (b) fitted regression line; (c) the five imputed datasets overlaid.
 
-### JAGS templates for MAR and MNAR
-
-Two illustrative JAGS model functions are provided — commented out so they do not run directly, since they require real data:
-
-**`model_mar`**: the MoA is simply a Normal linear regression with `y[i] ~ dnorm(mu[i], tau)`. Passing `NA` values in the data list causes JAGS to draw missing `y[i]` from the posterior predictive distribution. No explicit MoM is needed under MAR.
-
-**`model_mnar`**: extends `model_mar` by adding an explicit Bernoulli MoM: `m[i] ~ dbern(pi[i])` with `logit(pi[i]) = delta0 + delta1*x[i] + delta2*y[i]`. Because `delta2` is non-identifiable from the data alone, it is given an informative prior `Normal(0.28, precision=44)`. An inline MC check verifies the implied OR distribution.
-
 ### MenSS trial — descriptive analysis
 
 Loads `data_MenSS.rds` and builds a single tibble with QALYs, costs and treatment indicator. Two histograms (one per outcome) show the strong spike at QALY=1 in both arms and the right-skewed cost distributions.

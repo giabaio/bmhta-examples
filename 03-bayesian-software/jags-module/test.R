@@ -3,7 +3,7 @@ library(tidyverse)
 library(R2jags)
 
 # Loads the new module
-load.module("pcprob",path=".")
+load.module("pcprob",path=here::here("03-bayesian-software/jags-module/"))
 
 # Sets data
 y=4

@@ -118,7 +118,9 @@ Many figures in the book use `dev: "tikz"` to render axis labels and annotations
 
 If you use this code in your own work, please cite the book:
 
-> Baio, G. (in press). *Bayesian modelling in health technology assessment*. Chapman & Hall / CRC Press.
+> Baio, G. (2026). *Bayesian modelling in health technology assessment*. Chapman & Hall / CRC Press.
+
+The book is available at the [CRC website](https://www.routledge.com/Bayesian-Models-in-Health-Technology-Assessment/Baio/p/book/9781041297383). More information can be found at the [book webpage](https://gianluca.statistica.it/books/bmhta/).
 
 ---
 
